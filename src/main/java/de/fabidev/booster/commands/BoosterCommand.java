@@ -12,15 +12,12 @@ public class BoosterCommand implements CommandExecutor {
 
         if (sender instanceof Player){
             Player p = (Player) sender;
-
             if (p.hasPermission("booster.command")){
+
 
             }else {
                 p.sendMessage("§4§lDazu hast du keine Rechte!");
             }
-
-
-
         }else {
             System.out.println("Dieser Befehl ist nicht fuer die Konsole geeignet!");
         }

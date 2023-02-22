@@ -5,3 +5,7 @@ api-version: 1.19
 main: de.fabidev.booster.Booster
 
 commands:
+  adminbooster:
+  adminboosterex:
+  booster:
+  boosterextreme:
