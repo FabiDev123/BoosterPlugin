@@ -21,6 +21,10 @@ public class Boosters {
         }
     }
 
+    public static void closeConnection() throws SQLException {
+        con.close();
+    }
+
     public static void boosterZuenden(Player p, String which) {
         int i = getBoosters(p);
         if ( i != 0){
@@ -30,11 +34,11 @@ public class Boosters {
             }if (which.equalsIgnoreCase("break")){
                 handleBreak(p, i);
             }if (which.equalsIgnoreCase("mob")){
-
+                handleMob(p, i);
             }if (which.equalsIgnoreCase("drop")){
-
+                handleDrop(p, i);
             }if (which.equalsIgnoreCase("xp")){
-
+                handleXP(p, i);
             }
         }else {
             p.sendMessage("§cDu hast keine Booster mehr übrig! Erwerbe welche unter kingdomblocks.net oder ziehe diese in unseren Kisten!");
@@ -84,6 +88,196 @@ public class Boosters {
         }catch (Exception ex){
             return;
         }
+    }
+
+    public static void handleXP(Player p, int i){
+        if (Booster.xp == 4){
+            p.sendMessage("§c§lEs sind bereits §6§l4 §d§lXP-Booster §c§lgezündet!");
+            return;
+        }else if (Booster.xp == 0){
+            deleteOneBooster(p, i);
+            Booster.xp = 1;
+            Booster.xptimer[0] = 1800;
+            for (Player pl : Bukkit.getOnlinePlayers()){
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("§f§l" + p.getName() + " §ahat einen §d§lXP-Booster §afür §d§l30 Minuten §agezündet!");
+                pl.sendMessage("§aDer §d§lXP-Booster §aist nun auf §6§lLevel 1!");
+            }
+        }else if (Booster.xp == 1){
+            deleteOneBooster(p, i);
+            Booster.xp = 2;
+            Booster.xptimer[findEmptyArrayXP()] = 1800;
+            for (Player pl : Bukkit.getOnlinePlayers()){
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("§f§l" + p.getName() + " §ahat einen §d§lXP-Booster §afür §d§l30 Minuten §agezündet!");
+                pl.sendMessage("§aDer §d§lXP-Booster §aist nun auf §6§lLevel 2!");
+            }
+        }else if (Booster.xp == 2){
+            deleteOneBooster(p, i);
+            Booster.xp = 3;
+            Booster.xptimer[findEmptyArrayXP()] = 1800;
+            for (Player pl : Bukkit.getOnlinePlayers()){
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("§f§l" + p.getName() + " §ahat einen §d§lXP-Booster §afür §d§l30 Minuten §agezündet!");
+                pl.sendMessage("§aDer §d§lXP-Booster §aist nun auf §6§lLevel 3!");
+            }
+        }else if (Booster.xp == 3){
+            deleteOneBooster(p, i);
+            Booster.xp = 4;
+            Booster.xptimer[findEmptyArrayXP()] = 1800;
+            for (Player pl : Bukkit.getOnlinePlayers()){
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("§f§l" + p.getName() + " §ahat einen §d§lXP-Booster §afür §d§l30 Minuten §agezündet!");
+                pl.sendMessage("§aDer §d§lXP-Booster §aist nun auf §6§lLevel 4!");
+            }
+        }
+    }
+
+    public static int findEmptyArrayXP(){
+        if (Booster.xptimer[0] == -1){
+            return 0;
+        }else if (Booster.xptimer[1] == -1){
+            return 1;
+        }else if (Booster.xptimer[2] == -1){
+            return 2;
+        }else if (Booster.xptimer[3] == -1){
+            return 3;
+        }
+
+        return 0;
+
+    }
+
+    public static void handleDrop(Player p, int i){
+        if (Booster.drop == 3){
+            p.sendMessage("§c§lEs sind bereits §6§l3 §d§lDrop-Booster §c§lgezündet!");
+            return;
+        }else if (Booster.drop == 0){
+            deleteOneBooster(p, i);
+            Booster.drop = 1;
+            Booster.droptimer[0] = 1800;
+            for (Player pl : Bukkit.getOnlinePlayers()){
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("§f§l" + p.getName() + " §ahat einen §d§lDrop-Booster §afür §d§l30 Minuten §agezündet!");
+                pl.sendMessage("§aDer §d§lDrop-Booster §aist nun auf §6§lLevel 1!");
+            }
+        }else if (Booster.drop == 1){
+            deleteOneBooster(p, i);
+            Booster.drop = 2;
+            Booster.droptimer[findEmptyArrayDrop()] = 1800;
+            for (Player pl : Bukkit.getOnlinePlayers()){
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("§f§l" + p.getName() + " §ahat einen §d§lDrop-Booster §afür §d§l30 Minuten §agezündet!");
+                pl.sendMessage("§aDer §d§lDrop-Booster §aist nun auf §6§lLevel 2!");
+            }
+        }else if (Booster.drop == 2){
+            deleteOneBooster(p, i);
+            Booster.drop = 3;
+            Booster.droptimer[findEmptyArrayDrop()] = 1800;
+            for (Player pl : Bukkit.getOnlinePlayers()){
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("§f§l" + p.getName() + " §ahat einen §d§lDrop-Booster §afür §d§l30 Minuten §agezündet!");
+                pl.sendMessage("§aDer §d§lDrop-Booster §aist nun auf §6§lLevel 3!");
+            }
+        }
+    }
+
+    public static int findEmptyArrayDrop(){
+        if (Booster.droptimer[0] == -1){
+            return 0;
+        }else if (Booster.droptimer[1] == -1){
+            return 1;
+        }else if (Booster.droptimer[2] == -1){
+            return 2;
+        }
+        return 0;
+
+    }
+
+    public static void handleMob(Player p, int i){
+        if (Booster.mob == 3){
+            p.sendMessage("§c§lEs sind bereits §6§l3 §d§lMob-Booster §c§lgezündet!");
+            return;
+        }else if (Booster.mob == 0){
+            deleteOneBooster(p, i);
+            Booster.mob = 1;
+            Booster.mobtimer[0] = 1800;
+            for (Player pl : Bukkit.getOnlinePlayers()){
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("§f§l" + p.getName() + " §ahat einen §d§lMob-Booster §afür §d§l30 Minuten §agezündet!");
+                pl.sendMessage("§aDer §d§lMob-Booster §aist nun auf §6§lLevel 1!");
+            }
+        }else if (Booster.mob == 1){
+            deleteOneBooster(p, i);
+            Booster.mob = 2;
+            Booster.mobtimer[findEmptyArrayMob()] = 1800;
+            for (Player pl : Bukkit.getOnlinePlayers()){
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("§f§l" + p.getName() + " §ahat einen §d§lMob-Booster §afür §d§l30 Minuten §agezündet!");
+                pl.sendMessage("§aDer §d§lMob-Booster §aist nun auf §6§lLevel 2!");
+            }
+        }else if (Booster.mob == 2){
+            deleteOneBooster(p, i);
+            Booster.mob = 3;
+            Booster.mobtimer[findEmptyArrayMob()] = 1800;
+            for (Player pl : Bukkit.getOnlinePlayers()){
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("  ");
+                pl.sendMessage("§f§l" + p.getName() + " §ahat einen §d§lMob-Booster §afür §d§l30 Minuten §agezündet!");
+                pl.sendMessage("§aDer §d§lMob-Booster §aist nun auf §6§lLevel 3!");
+            }
+        }
+    }
+
+    public static int findEmptyArrayMob(){
+        if (Booster.mobtimer[0] == -1){
+            return 0;
+        }else if (Booster.mobtimer[1] == -1){
+            return 1;
+        }else if (Booster.mobtimer[2] == -1){
+            return 2;
+        }
+        return 0;
+
     }
 
     public static void handleBreak(Player p, int i){

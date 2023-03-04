@@ -25,7 +25,7 @@ public class BoosterCommand implements CommandExecutor {
                         return false;
                     }
 
-                    p.sendMessage("§aDu hast noch " + Boosters.getBoosters(p) + " Booster übrig!");
+                    p.sendMessage("§aDu hast noch §d§l" + Boosters.getBoosters(p) + " Booster §aübrig!");
                     p.sendMessage("§aBenutzung:");
                     p.sendMessage("§a/booster §a§lfür Informationen rund um deine Booster");
                     p.sendMessage("§a/booster <fliegen/break/mob/drop/xp> §a§lum deine Booster einzulösen");

@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 
+import java.sql.SQLException;
+
 public class Booster extends JavaPlugin {
 
 
@@ -24,11 +26,22 @@ public class Booster extends JavaPlugin {
 
 
     public static boolean fly;
-    public static int flytimer = 0;
+    public static int flytimer = -1;
 
     public static boolean breakbool;
 
-    public static int breaktimer = 0;
+    public static int breaktimer = -1;
+
+    public static int mob = 0;
+    public static int[] mobtimer = new int[3];
+
+    public static int drop = 0;
+
+    public static int[] droptimer = new int[3];
+
+
+    public static int xp = 0;
+    public static int[] xptimer = new int[4];
 
 
 
@@ -41,12 +54,31 @@ public class Booster extends JavaPlugin {
         myLoadConfig();
         Boosters.connectToDB();
         runAllTimers();
+        initAllArrays();
+
     }
 
 
 
     @Override
     public void onDisable(){
+        try {
+            Boosters.closeConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void initAllArrays(){
+        for (int i = 0; i<mobtimer.length; i++){
+            mobtimer[i] = -1;
+        }
+        for (int i = 0; i<droptimer.length; i++){
+            droptimer[i] = -1;
+        }
+        for (int i = 0; i<xptimer.length; i++){
+            xptimer[i] = -1;
+        }
     }
 
 
@@ -121,6 +153,268 @@ public class Booster extends JavaPlugin {
 
         }catch (Exception ex){
             ex.printStackTrace();
+        }
+
+        //mob
+
+        Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i<mobtimer.length; i++){
+                    switch (mobtimer[i]){
+                        case 0:
+                            Bukkit.getServer().getScheduler().runTask(Booster.main, new Runnable() {
+                                @Override
+                                public void run() {
+                                    handleDeactivateMob();
+                                }
+                            });
+
+                            mobtimer[i] = -1; break;
+                        case 30, 15, 3, 2, 1: sendMessageMob(mobtimer[i]); mobtimer[i]--; break;
+                        case -1: break;
+                        default: mobtimer[i]--; break;
+                    }
+                }
+            }
+        }, 0, 20);
+
+        //drop
+        Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i<droptimer.length; i++){
+                    switch (droptimer[i]){
+                        case 0:
+                            Bukkit.getServer().getScheduler().runTask(Booster.main, new Runnable() {
+                                @Override
+                                public void run() {
+                                    handleDeactivateDrop();
+                                }
+                            });
+
+                            droptimer[i] = -1; break;
+                        case 30, 15, 3, 2, 1: sendMessageDrop(droptimer[i]); droptimer[i]--; break;
+                        case -1: break;
+                        default: droptimer[i]--; break;
+                    }
+                }
+            }
+        }, 0, 20);
+
+
+        //xp
+
+        Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i<xptimer.length; i++){
+                    switch (xptimer[i]){
+                        case 0:
+                            Bukkit.getServer().getScheduler().runTask(Booster.main, new Runnable() {
+                                @Override
+                                public void run() {
+                                    handleDeactivateXP();
+                                }
+                            });
+
+                            xptimer[i] = -1; break;
+                        case 30, 15, 3, 2, 1: sendMessageXP(xptimer[i]); xptimer[i]--; break;
+                        case -1: break;
+                        default: xptimer[i]--; break;
+                    }
+                }
+            }
+        }, 0, 20);
+
+
+
+
+    }
+
+    public static void sendMessageXP(int i){
+        if (i == 1){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lDer §d§lXP-Booster §c§lläuft in §a§l" + i + " §c§lSekunde ab!");
+            }
+        }
+        for (Player p : Bukkit.getOnlinePlayers()){
+            p.sendMessage("   ");
+            p.sendMessage("   ");
+            p.sendMessage("   ");
+            p.sendMessage("   ");
+            p.sendMessage("   ");
+            p.sendMessage("§c§lDer §d§lXP-Booster §c§lläuft in §a§l" + i + " §c§lSekunden ab!");
+        }
+    }
+
+    public static void handleDeactivateXP(){
+        if (xp == 4){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lEin §d§lXP-Booster §c§list nun deaktiviert!");
+                p.sendMessage("§a§lVerbleibende §d§lXP-Booster: §a§l3");
+            }
+            xp--;
+        }else if (xp == 3){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lEin §d§lXP-Booster §c§list nun deaktiviert!");
+                p.sendMessage("§a§lVerbleibende §d§lXP-Booster: §a§l2");
+            }
+            xp--;
+        }else if (xp == 2){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lEin §d§lXP-Booster §c§list nun deaktiviert!");
+                p.sendMessage("§a§lVerbleibende §d§lXP-Booster: §a§l1");
+            }
+            xp--;
+        }else if (xp == 1){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lDer §d§lXP-Booster §c§list nun komplett deaktiviert!");
+            }
+            xp--;
+        }
+    }
+
+
+
+
+    public static void sendMessageDrop(int i){
+        if (i == 1){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lDer §d§lDrop-Booster §c§lläuft in §a§l" + i + " §c§lSekunde ab!");
+            }
+        }
+        for (Player p : Bukkit.getOnlinePlayers()){
+            p.sendMessage("   ");
+            p.sendMessage("   ");
+            p.sendMessage("   ");
+            p.sendMessage("   ");
+            p.sendMessage("   ");
+            p.sendMessage("§c§lDer §d§lDrop-Booster §c§lläuft in §a§l" + i + " §c§lSekunden ab!");
+        }
+    }
+
+    public static void handleDeactivateDrop(){
+        if (drop == 3){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lEin §d§lDrop-Booster §c§list nun deaktiviert!");
+                p.sendMessage("§a§lVerbleibende §d§lDrop-Booster: §a§l2");
+            }
+            drop--;
+        }else if (drop == 2){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lEin §d§lDrop-Booster §c§list nun deaktiviert!");
+                p.sendMessage("§a§lVerbleibende §d§lDrop-Booster: §a§l1");
+            }
+            drop--;
+        }else if (drop == 1){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lDer §d§lDrop-Booster §c§list nun komplett deaktiviert!");
+            }
+            drop--;
+        }
+    }
+
+
+    public static void sendMessageMob(int i){
+            if (i == 1){
+                for (Player p : Bukkit.getOnlinePlayers()){
+                    p.sendMessage("   ");
+                    p.sendMessage("   ");
+                    p.sendMessage("   ");
+                    p.sendMessage("   ");
+                    p.sendMessage("   ");
+                    p.sendMessage("§c§lDer §d§lMob-Booster §c§lläuft in §a§l" + i + " §c§lSekunde ab!");
+                }
+            }
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lDer §d§lMob-Booster §c§lläuft in §a§l" + i + " §c§lSekunden ab!");
+            }
+    }
+
+    public static void handleDeactivateMob(){
+        if (mob == 3){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lEin §d§lMob-Booster §c§list nun deaktiviert!");
+                p.sendMessage("§a§lVerbleibende §d§lMob-Booster: §a§l2");
+            }
+            mob--;
+        }else if (mob == 2){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lEin §d§lMob-Booster §c§list nun deaktiviert!");
+                p.sendMessage("§a§lVerbleibende §d§lMob-Booster: §a§l1");
+            }
+            mob--;
+        }else if (mob == 1){
+            for (Player p : Bukkit.getOnlinePlayers()){
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("   ");
+                p.sendMessage("§c§lDer §d§lMob-Booster §c§list nun komplett deaktiviert!");
+            }
+            mob--;
         }
     }
 
