@@ -15,7 +15,7 @@ public class BoosterCommand implements CommandExecutor {
             Player p = (Player) sender;
             if (p.hasPermission("booster.command")){
                 if (args.length == 0){
-                    int i = Boosters.getBoosters(p);
+                    int i = Boosters.getBoosters(p, "booster");
 
                     if (i == 0){
                         p.sendMessage("§cDu hast keine Booster mehr übrig! Erwerbe welche unter kingdomblocks.net oder ziehe diese in unseren Kisten!");
@@ -25,7 +25,7 @@ public class BoosterCommand implements CommandExecutor {
                         return false;
                     }
 
-                    p.sendMessage("§aDu hast noch §d§l" + Boosters.getBoosters(p) + " Booster §aübrig!");
+                    p.sendMessage("§aDu hast noch §d§l" + Boosters.getBoosters(p, "booster") + " Booster §aübrig!");
                     p.sendMessage("§aBenutzung:");
                     p.sendMessage("§a/booster §a§lfür Informationen rund um deine Booster");
                     p.sendMessage("§a/booster <fliegen/break/mob/drop/xp> §a§lum deine Booster einzulösen");

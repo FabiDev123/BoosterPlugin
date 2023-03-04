@@ -25,8 +25,51 @@ public class Boosters {
         con.close();
     }
 
+    public static void boosterExtremeZuenden(Player p){
+        int i = getBoosters(p, "extreme");
+            if (i != 0){
+                if (Booster.drop == 0 && Booster.mob == 0 && Booster.xp == 0){
+                    Booster.drop = 3;
+                    Booster.mob = 3;
+                    Booster.xp = 4;
+                    for (int x = 0; x<Booster.droptimer.length; x++){
+                        Booster.droptimer[x] = 1800;
+                        Booster.mobtimer[x] = 1800;
+                        Booster.xptimer[x] = 1800;
+                    }
+                    Booster.xptimer[3] = 1800;
+
+                    Booster.fly = true;
+                    Booster.flytimer = Booster.flytimer + 1800;
+                    Booster.breakbool = true;
+                    Booster.breaktimer = Booster.breaktimer + 1800;
+                    for (Player pl : Bukkit.getOnlinePlayers()){
+                        pl.setAllowFlight(true);
+                        pl.setFlying(true);
+                        pl.sendMessage("  ");
+                        pl.sendMessage("  ");
+                        pl.sendMessage("  ");
+                        pl.sendMessage("  ");
+                        pl.sendMessage("  ");
+                        pl.sendMessage("§f§l" + p.getName() + " §ahat einen §d§lExtreme-Booster §agezündet!");
+                    }
+                    deleteOneBooster(p, i, "extreme");
+
+                }else {
+                    p.sendMessage("§cDu kannst derzeit keinen ExtremeBooster zünden, da ein Mob/Drop/XP-Booster bereits läuft.");
+                }
+            }else {
+                p.sendMessage("§cDu hast keine Extreme-Booster mehr übrig! Erwerbe welche unter kingdomblocks.net oder ziehe diese in unseren Kisten!");
+                p.sendMessage("§aBenutzung:");
+                p.sendMessage("§a/boosterextreme §a§lfür Informationen rund um deine Extreme-Booster");
+                p.sendMessage("§a/boosterextreme <zuenden> §a§lum deine Booster einzulösen");
+                return;
+            }
+
+    }
+
     public static void boosterZuenden(Player p, String which) {
-        int i = getBoosters(p);
+        int i = getBoosters(p, "booster");
         if ( i != 0){
 
             if (which.equalsIgnoreCase("fliegen")){
@@ -49,16 +92,27 @@ public class Boosters {
         }
     }
 
-    public static int getBoosters(Player p)  {
+    public static int getBoosters(Player p, String which)  {
         try {
-            String exec = "SELECT boosters FROM " + Booster.tablename + " WHERE uuid='" + p.getUniqueId() + "'";
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(exec);
+            if (which.equalsIgnoreCase("booster")) {
 
-            while (rs.next()) {
-                return rs.getInt(1);
+                String exec = "SELECT boosters FROM " + Booster.tablename + " WHERE uuid='" + p.getUniqueId() + "'";
+                Statement st = con.createStatement();
+                ResultSet rs = st.executeQuery(exec);
+
+                while (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }else if (which.equalsIgnoreCase("extreme")){
+                String exec = "SELECT exboosters FROM " + Booster.tablename + " WHERE uuid='" + p.getUniqueId() + "'";
+                Statement st = con.createStatement();
+                ResultSet rs = st.executeQuery(exec);
+
+                while (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
-            exec = "INSERT INTO " + Booster.tablename + " VALUES ('" + p.getUniqueId() + "', 0, 0)";
+            String exec = "INSERT INTO " + Booster.tablename + " VALUES ('" + p.getUniqueId() + "', 0, 0)";
             Statement st1 = con.createStatement();
             st1.executeUpdate(exec);
         }catch (Exception ex){
@@ -67,24 +121,45 @@ public class Boosters {
         return 0;
     }
 
-    public static void setBoosters(Player p, Player target, int i){
-        getBoosters(target);
-        try {
-            String exec = "UPDATE " + Booster.tablename + " SET boosters="+i+" WHERE uuid='" + target.getUniqueId() + "'";
-            Statement st = con.createStatement();
-            st.executeUpdate(exec);
-        }catch (Exception ex){
-            return;
-        }
+    public static void setBoosters(Player p, Player target, int i, String which){
+        if (which.equalsIgnoreCase("booster")){
+            getBoosters(target, "booster");
+            try {
+                String exec = "UPDATE " + Booster.tablename + " SET boosters="+i+" WHERE uuid='" + target.getUniqueId() + "'";
+                Statement st = con.createStatement();
+                st.executeUpdate(exec);
+            }catch (Exception ex){
+                return;
+            }
 
-        p.sendMessage("Booster des Spielers " + target.getName() + " erfolgreich auf " + i + " Booster gesetzt!");
+            p.sendMessage("§aBooster des Spielers " + target.getName() + " erfolgreich auf " + i + " Booster gesetzt!");
+        }else if (which.equalsIgnoreCase("extreme")){
+            getBoosters(target, "extreme");
+            try {
+                String exec = "UPDATE " + Booster.tablename + " SET exboosters="+i+" WHERE uuid='" + target.getUniqueId() + "'";
+                Statement st = con.createStatement();
+                st.executeUpdate(exec);
+            }catch (Exception ex){
+                return;
+            }
+
+            p.sendMessage("Extreme-Booster des Spielers " + target.getName() + " erfolgreich auf " + i + " Booster gesetzt!");
+        }
     }
 
-    public static void deleteOneBooster(Player p, int i){
+    public static void deleteOneBooster(Player p, int i, String which){
         try {
-            String exec = "UPDATE " + Booster.tablename + " SET boosters="+ (i-1) +" WHERE uuid='" + p.getUniqueId() + "'";
-            Statement st = con.createStatement();
-            st.executeUpdate(exec);
+
+            if (which.equalsIgnoreCase("booster")) {
+
+                String exec = "UPDATE " + Booster.tablename + " SET boosters="+ (i-1) +" WHERE uuid='" + p.getUniqueId() + "'";
+                Statement st = con.createStatement();
+                st.executeUpdate(exec);
+            }else if (which.equalsIgnoreCase("extreme")){
+                String exec = "UPDATE " + Booster.tablename + " SET exboosters="+ (i-1) +" WHERE uuid='" + p.getUniqueId() + "'";
+                Statement st = con.createStatement();
+                st.executeUpdate(exec);
+            }
         }catch (Exception ex){
             return;
         }
@@ -95,7 +170,7 @@ public class Boosters {
             p.sendMessage("§c§lEs sind bereits §6§l4 §d§lXP-Booster §c§lgezündet!");
             return;
         }else if (Booster.xp == 0){
-            deleteOneBooster(p, i);
+            deleteOneBooster(p, i, "booster");
             Booster.xp = 1;
             Booster.xptimer[0] = 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
@@ -108,7 +183,7 @@ public class Boosters {
                 pl.sendMessage("§aDer §d§lXP-Booster §aist nun auf §6§lLevel 1!");
             }
         }else if (Booster.xp == 1){
-            deleteOneBooster(p, i);
+            deleteOneBooster(p, i, "booster");
             Booster.xp = 2;
             Booster.xptimer[findEmptyArrayXP()] = 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
@@ -121,7 +196,7 @@ public class Boosters {
                 pl.sendMessage("§aDer §d§lXP-Booster §aist nun auf §6§lLevel 2!");
             }
         }else if (Booster.xp == 2){
-            deleteOneBooster(p, i);
+            deleteOneBooster(p, i, "booster");
             Booster.xp = 3;
             Booster.xptimer[findEmptyArrayXP()] = 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
@@ -134,7 +209,7 @@ public class Boosters {
                 pl.sendMessage("§aDer §d§lXP-Booster §aist nun auf §6§lLevel 3!");
             }
         }else if (Booster.xp == 3){
-            deleteOneBooster(p, i);
+            deleteOneBooster(p, i, "booster");
             Booster.xp = 4;
             Booster.xptimer[findEmptyArrayXP()] = 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
@@ -169,7 +244,7 @@ public class Boosters {
             p.sendMessage("§c§lEs sind bereits §6§l3 §d§lDrop-Booster §c§lgezündet!");
             return;
         }else if (Booster.drop == 0){
-            deleteOneBooster(p, i);
+            deleteOneBooster(p, i, "booster");
             Booster.drop = 1;
             Booster.droptimer[0] = 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
@@ -182,7 +257,7 @@ public class Boosters {
                 pl.sendMessage("§aDer §d§lDrop-Booster §aist nun auf §6§lLevel 1!");
             }
         }else if (Booster.drop == 1){
-            deleteOneBooster(p, i);
+            deleteOneBooster(p, i, "booster");
             Booster.drop = 2;
             Booster.droptimer[findEmptyArrayDrop()] = 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
@@ -195,7 +270,7 @@ public class Boosters {
                 pl.sendMessage("§aDer §d§lDrop-Booster §aist nun auf §6§lLevel 2!");
             }
         }else if (Booster.drop == 2){
-            deleteOneBooster(p, i);
+            deleteOneBooster(p, i, "booster");
             Booster.drop = 3;
             Booster.droptimer[findEmptyArrayDrop()] = 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
@@ -227,7 +302,7 @@ public class Boosters {
             p.sendMessage("§c§lEs sind bereits §6§l3 §d§lMob-Booster §c§lgezündet!");
             return;
         }else if (Booster.mob == 0){
-            deleteOneBooster(p, i);
+            deleteOneBooster(p, i, "booster");
             Booster.mob = 1;
             Booster.mobtimer[0] = 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
@@ -240,7 +315,7 @@ public class Boosters {
                 pl.sendMessage("§aDer §d§lMob-Booster §aist nun auf §6§lLevel 1!");
             }
         }else if (Booster.mob == 1){
-            deleteOneBooster(p, i);
+            deleteOneBooster(p, i, "booster");
             Booster.mob = 2;
             Booster.mobtimer[findEmptyArrayMob()] = 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
@@ -253,7 +328,7 @@ public class Boosters {
                 pl.sendMessage("§aDer §d§lMob-Booster §aist nun auf §6§lLevel 2!");
             }
         }else if (Booster.mob == 2){
-            deleteOneBooster(p, i);
+            deleteOneBooster(p, i, "booster");
             Booster.mob = 3;
             Booster.mobtimer[findEmptyArrayMob()] = 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
@@ -281,7 +356,7 @@ public class Boosters {
     }
 
     public static void handleBreak(Player p, int i){
-        deleteOneBooster(p, i);
+        deleteOneBooster(p, i, "booster");
         if (!Booster.breakbool){
             Booster.breaktimer = 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
@@ -310,7 +385,7 @@ public class Boosters {
     }
 
     public static void handleFly(Player p, int i){
-       deleteOneBooster(p, i);
+       deleteOneBooster(p, i, "booster");
         if (Booster.fly){
             Booster.flytimer = Booster.flytimer + 1800;
             for (Player pl : Bukkit.getOnlinePlayers()){
